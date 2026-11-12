@@ -17,25 +17,26 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Install SDK platform 34
-        run: |
-          yes | sdkmanager --licenses || true
-          sdkmanager "platforms;android-34" "build-tools;34.0.0" "platform-tools"
-
-      - name: Setup Gradle 8.5
+      - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: '8.5'
 
-      - name: Build Debug APK
-        run: gradle assembleDebug --no-daemon --stacktrace --info
+      - name: Show structure
+        run: |
+          echo "=== ROOT ==="
+          ls -la
+          echo "=== app ==="
+          ls -la app || true
+          echo "=== settings ==="
+          cat settings.gradle.kts
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
+      - name: Build Debug APK
+        run: gradle assembleDebug --no-daemon --stacktrace
+
+      - name: Upload
         if: always()
+        uses: actions/upload-artifact@v4
         with:
           name: CounterFlame-debug
           path: app/build/outputs/apk/debug/app-debug.apk
